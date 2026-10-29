@@ -1,0 +1,14 @@
+.metadata/
+pdf/
+Debug/
+Release/
+*.o
+*.d
+*.elf
+*.map
+*.list
+*.su
+*.cyclo
+.settings/
+*.log
+Clock/
