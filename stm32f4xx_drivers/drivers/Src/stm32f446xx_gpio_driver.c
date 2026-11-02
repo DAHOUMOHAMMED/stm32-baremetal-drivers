@@ -104,6 +104,24 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 /*
  * Init and DeInit
  */
+
+/*********************************************************************
+ * @fn      - GPIO_Init
+ *
+ * @brief   - Initializes a GPIO pin according to the user configuration
+ *
+ * @param[in]  - pGPIOHandle : pointer to the handle containing the GPIO
+ *                             base address (pGPIOx) and the pin configuration
+ *                             (number, mode, speed, pull-up/down, output type,
+ *                             alternate function)
+ *
+ * @return     - none
+ *
+ * @Note       - Configures MODER, OSPEEDR, PUPDR, OTYPER and AFR[0]/AFR[1]
+ *             - The peripheral clock must be enabled before calling this
+ *               function (see GPIO_PeriClockControl)
+ *             - Interrupt mode (EXTI) is not implemented yet
+ *********************************************************************/
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 {
 	uint32_t temp = 0;
@@ -145,7 +163,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	// 4 configure the outype
 
 	temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinOPType << pin);
-	pGPIOHandle->pGPIOx->OTYPER &= ~(0x3U << pin);   /* efface les 2 bits */
+	pGPIOHandle->pGPIOx->OTYPER &= ~(0x1U << pin);   /* efface les 2 bits */
 	pGPIOHandle->pGPIOx->OTYPER |= temp;
 
 	temp = 0;
@@ -167,16 +185,162 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	temp = 0;
 
 }
-void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
+
+
+/*********************************************************************
+ * @fn      - GPIO_DeInit
+ *
+ * @brief   - Resets all registers of a GPIO port to their reset values
+ *
+ * @param[in]  - pGPIOx : base address of the GPIO peripheral (GPIOA to GPIOH)
+ *
+ * @return     - none
+ *
+ * @Note       - Uses the RCC AHB1 peripheral reset register (AHB1RSTR):
+ *               the port's reset bit is set to 1 then cleared to 0
+ *             - Resets the whole port (all 16 pins), not a single pin
+ *********************************************************************/
+void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
+{
+	if (pGPIOx == GPIOA)
+		{
+			GPIOA_REG_RESET();
+		}
+		else if (pGPIOx == GPIOB)
+		{
+			GPIOB_REG_RESET();
+		}
+		else if (pGPIOx == GPIOC)
+		{
+			GPIOC_REG_RESET();
+		}
+		else if (pGPIOx == GPIOD)
+		{
+			GPIOD_REG_RESET();
+		}
+		else if (pGPIOx == GPIOE)
+		{
+			GPIOE_REG_RESET();
+		}
+		else if (pGPIOx == GPIOF)
+		{
+			GPIOF_REG_RESET();
+		}
+		else if (pGPIOx == GPIOG)
+		{
+			GPIOG_REG_RESET();
+		}
+		else if (pGPIOx == GPIOH)
+		{
+			GPIOH_REG_RESET();
+		}
+}
 
 /*
  * Data Read and Write
  */
-uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber);
-uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx );
-void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber , uint8_t Value);
-void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
-void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber);
+
+/*********************************************************************
+ * @fn         - GPIO_ReadFromInputPin
+ *
+ * @brief      - Reads the logic level of a single GPIO input pin
+ *
+ * @param[in]  - pGPIOx     : base address of the GPIO peripheral (GPIOA, GPIOB, ...)
+ * @param[in]  - PinNumber  : pin to read (0 to 15)
+ *
+ * @return     - 0 or 1 (logic level of the pin)
+ *
+ * @Note       - Reads the IDR register (input data register)
+ *********************************************************************/
+uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber)
+{
+	uint8_t pinValue = (uint8_t)(((pGPIOx->IDR)>> PinNumber) & 0x00000001);
+
+	return pinValue;
+}
+
+
+/*********************************************************************
+ * @fn      - GPIO_ReadFromInputPort
+ *
+ * @brief   - Reads the logic levels of all 16 pins of a GPIO port
+ *
+ * @param[in]  - pGPIOx : base address of the GPIO peripheral (GPIOA, GPIOB, ...)
+ *
+ * @return     - 16-bit value, bit n = logic level of pin n
+ *
+ * @Note       - Reads the IDR register (input data register)
+ *********************************************************************/
+uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx )
+{
+	uint16_t portValue = (uint16_t)((pGPIOx->IDR) & 0x0000FFFF);
+
+	return portValue;
+}
+
+
+/*********************************************************************
+ * @fn         - GPIO_WriteToOutputPin
+ *
+ * @brief      - Sets or clears a single GPIO output pin
+ *
+ * @param[in]  - pGPIOx     : base address of the GPIO peripheral (GPIOA, GPIOB, ...)
+ * @param[in]  - PinNumber  : pin to write (0 to 15)
+ * @param[in]  - Value      : SET (1) or RESET (0)
+ *
+ * @return     - none
+ *
+ * @Note       - Read-modify-write on the ODR register, other pins are unchanged
+ *********************************************************************/
+void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber , uint8_t Value)
+{
+	if(Value == GPIO_PIN_SET)
+	{
+		pGPIOx->ODR |= (1U << PinNumber);
+	}
+
+	else
+	{
+		pGPIOx->ODR &= ~(1U << PinNumber);
+	}
+}
+
+/*********************************************************************
+ * @fn         - GPIO_WriteToOutputPort
+ *
+ * @brief      - Writes a 16-bit value to all pins of a GPIO port
+ *
+ * @param[in]  - pGPIOx : base address of the GPIO peripheral (GPIOA, GPIOB, ...)
+ * @param[in]  - Value  : 16-bit value, bit n = level of pin n
+ *
+ * @return     - none
+ *
+ * @Note       - Overwrites the whole ODR register (all 16 pins)
+ *********************************************************************/
+void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value)
+{
+
+	pGPIOx->ODR = Value;
+
+}
+
+
+/*********************************************************************
+ * @fn         - GPIO_ToggleOutputPin
+ *
+ * @brief      - Toggles the logic level of a single GPIO output pin
+ *
+ * @param[in]  - pGPIOx     : base address of the GPIO peripheral (GPIOA, GPIOB, ...)
+ * @param[in]  - PinNumber  : pin to toggle (0 to 15)
+ *
+ * @return     - none
+ *
+ * @Note       - Read-modify-write on the ODR register, other pins are unchanged
+ *********************************************************************/
+void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber)
+{
+	pGPIOx->ODR ^= (1 << PinNumber);
+}
 
 /*
  * IRQ Configuration and Handling
