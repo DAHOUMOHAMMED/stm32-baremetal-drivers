@@ -43,7 +43,7 @@
 #define GPIOF_BASEADDR          (AHB1PERIFH_BASEADDR + 0x1400U)
 #define GPIOG_BASEADDR          (AHB1PERIFH_BASEADDR + 0x1800U)
 #define GPIOH_BASEADDR          (AHB1PERIFH_BASEADDR + 0x1C00U)
-#define RCC_BASEADDR            (AHB1PERIPH_BASE + 0x3800U)
+#define RCC_BASEADDR            (AHB1PERIFH_BASEADDR + 0x3800U)
 
 
 /* ---------- Peripherals APB1 ---------- */
@@ -76,7 +76,7 @@ typedef struct
 	__vo uint32_t MODER;            //GPIO port mode register             	  :   address offset 0x00
 	__vo uint32_t OTYPER;		   //GPIO port output type register       	  :   address offset 0x40
 	__vo uint32_t OSPEEDER;		   //GPIO port output speed register      	  :   address offset 0x80
-	__vo uint32_t PUPDR;			   //GPIO port pull-up/pull-down register 	  :   address offset 0x0c
+	__vo uint32_t PUPDR;			//GPIO port pull-up/pull-down register 	  :   address offset 0x0c
 	__vo uint32_t IDR;			   //GPIO port input data register		  	  :   address offset 0x10
 	__vo uint32_t ODR;			   //GPIO port output data register			  :   address offset 0x14
 	__vo uint32_t BSRR;			   //GPIO port bit set/reset register	      :   address offset 0x18
@@ -238,6 +238,19 @@ typedef struct
  */
 
 #define SYSCFG_PCLK_DI()   (RCC->APB2ENR &= ~(1 << 14))
+
+
+
+//some generic macros
+
+#define ENABALE				    1
+#define DISABLE 				0
+#define SET 					ENBALE
+#define RESET 					DISABLE
+#define GPIO_PIN_SET  			SET
+#define GPIO_PIN_RESET  		RESET
+
+
 
 
 #endif /* INC_STM32F446XX_H_ */
