@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+//#include "stm32f446xx_gpio_driver.c"
+
 #define __vo volatile
 
 /*
@@ -264,6 +266,6 @@ typedef struct
 #define GPIO_PIN_RESET  		RESET
 
 
-
+#include "stm32f446xx_gpio_driver.h"
 
 #endif /* INC_STM32F446XX_H_ */
