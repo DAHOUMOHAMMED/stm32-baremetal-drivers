@@ -349,6 +349,35 @@ typedef struct
 #define IRQ_NO_EXTI9_5          23
 #define IRQ_NO_EXTI15_10        40
 
+
+
+
+/*
+ * NVIC Interrupt Priority Levels
+ *
+ * STM32F446RE:
+ * - 4 bits of interrupt priority are implemented.
+ * - 16 programmable priority levels (2^4 = 16).
+ * - Priority 0  : Highest priority.
+ * - Priority 15 : Lowest priority.
+ */
+#define NVIC_IRQ_PRIO_0      0
+#define NVIC_IRQ_PRIO_1      1
+#define NVIC_IRQ_PRIO_2      2
+#define NVIC_IRQ_PRIO_3      3
+#define NVIC_IRQ_PRIO_4      4
+#define NVIC_IRQ_PRIO_5      5
+#define NVIC_IRQ_PRIO_6      6
+#define NVIC_IRQ_PRIO_7      7
+#define NVIC_IRQ_PRIO_8      8
+#define NVIC_IRQ_PRIO_9      9
+#define NVIC_IRQ_PRIO_10     10
+#define NVIC_IRQ_PRIO_11     11
+#define NVIC_IRQ_PRIO_12     12
+#define NVIC_IRQ_PRIO_13     13
+#define NVIC_IRQ_PRIO_14     14
+#define NVIC_IRQ_PRIO_15     15
+
 //some generic macros
 
 #define ENABLE				    1
