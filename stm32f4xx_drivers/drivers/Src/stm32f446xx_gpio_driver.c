@@ -28,7 +28,7 @@
  *********************************************************************/
 void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi)
 {
-	if (EnorDi == ENABALE)
+	if (EnorDi == ENABLE)
 	{
 		if (pGPIOx == GPIOA)
 		{
@@ -140,7 +140,43 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 
 	else
 	{
-		//interupt mode
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_FT)
+		{
+			//1. configure the FTSR
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//Clear the corresponding RTSR pin
+			EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+
+		}
+
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RT)
+		{
+			//2. configure the RTSR
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			//Clear the corresponding RTSR pin
+			EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_IT_RFT)
+		{
+			//3. configure the RFT
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+
+		//2. configure the GPIO port selection in SYSCFG_EXTICR
+
+
+		uint8_t temp1 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4;
+		uint8_t temp2 = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
+		uint8_t portcode = GPIO_BASEADDR_TO_CODE(pGPIOHandle->pGPIOx);
+
+		SYSCFG_PCLK_EN();
+		SYSCFG->EXTICR[temp1] = portcode << (temp2 *4);
+
+		//3. enable the exti interrupt delivery using IMR
+		EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+
 	}
 
 	// 2 configure the speed
@@ -345,5 +381,97 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx , uint8_t PinNumber)
 /*
  * IRQ Configuration and Handling
  */
-void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi );
-void GPIO_IRQHandling(uint8_t PinNumber);
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi )
+{
+	uint32_t temp = IRQNumber%32;
+
+	if(EnorDi == ENABLE)
+	{
+		if(IRQNumber <= 31)
+		{
+			(*NVIC_ISER0) = (1U << temp);
+		}
+
+		else if(IRQNumber > 31 && IRQNumber < 64)
+		{
+			(*NVIC_ISER1) = (1U << temp);
+		}
+
+		else if(IRQNumber >= 64 && IRQNumber < 96)
+		{
+			(*NVIC_ISER2) = (1U << temp);
+		}
+	}
+
+	else
+	{
+		if(IRQNumber <= 31)
+		{
+			(*NVIC_ICER0) = (1U << temp);
+		}
+
+		else if(IRQNumber > 31 && IRQNumber < 64)
+		{
+			(*NVIC_ICER1) = (1U << temp);
+		}
+
+		else if(IRQNumber >= 64 && IRQNumber < 96)
+		{
+			(*NVIC_ICER2) = (1U << temp);
+		}
+	}
+}
+
+
+
+/*********************************************************************
+ * @fn              - GPIO_IRQPriorityConfig
+ *
+ * @brief           - This function sets the priority of an IRQ line in the NVIC
+ *
+ * @param[in]       - IRQ number (position in the vector table, e.g. IRQ_NO_EXTI15_10)
+ * @param[in]       - IRQ priority, from 0 (highest) to 15 (lowest)
+ *
+ * @return          - none
+ *
+ * @Note            - Each IPR register (32 bits) holds the priority of 4 IRQ lines
+ *                    (8 bits each). On the STM32F4, only the upper 4 bits of each
+ *                    8-bit field are implemented, so the priority is shifted
+ *                    by (8 - NO_PR_BITS_IMPLEMENTED) bits before being written.
+ *********************************************************************/
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority)
+{
+	uint8_t iprx = IRQNumber/4;
+	uint8_t iprx_section = IRQNumber%4;
+
+	uint8_t shift_amount = (8*iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);
+
+	*(NVIC_PR_BASE_ADDR + iprx) &= ~(0xFU << shift_amount);
+	*(NVIC_PR_BASE_ADDR + iprx) |= ((uint32_t)IRQPriority << shift_amount);
+
+}
+
+
+/*********************************************************************
+ * @fn              - GPIO_IRQHandling
+ *
+ * @brief           - This function clears the EXTI pending flag of the given pin
+ *
+ * @param[in]       - pin number (0 to 15) that triggered the interrupt
+ *
+ * @return          - none
+ *
+ * @Note            - Must be called from the IRQ handler (e.g. EXTI15_10_IRQHandler).
+ *                    The pending flag is cleared by writing 1 to it: use "=" and not "|=",
+ *                    otherwise the other pending flags, which are read as 1, would be
+ *                    cleared too.
+ *********************************************************************/
+void GPIO_IRQHandling(uint8_t PinNumber)
+{
+	/* if the pending flag of this EXTI line is set */
+	if (EXTI->PR & (1U << PinNumber))
+	{
+		/* clear it by writing 1 (writing 0 has no effect) */
+		EXTI->PR = (1U << PinNumber);
+	}
+}
