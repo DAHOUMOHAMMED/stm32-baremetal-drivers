@@ -12,3 +12,5 @@ Release/
 .settings/
 *.log
 Clock/
+/HSI_Clock_Output/HSI_Clock_Output Debug.launch
+
