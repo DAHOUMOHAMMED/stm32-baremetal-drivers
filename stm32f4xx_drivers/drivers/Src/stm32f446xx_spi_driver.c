@@ -110,13 +110,17 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	tempreg |= ((uint32_t)pSPIHandle->SPIConfig.SPI_SSM << SPI_CR1_SSM);
 
 	/* 8. in master mode with software NSS, SSI must be 1 (otherwise MODF error) */
-		/*if (pSPIHandle->SPIConfig.SPI_SSM == SPI_SSM_SW &&
-	    pSPIHandle->SPIConfig.SPI_DeviceMode == SPI_DEVICE_MODE_MASTER)
+		if (pSPIHandle->SPIConfig.SPI_SSM == SPI_SSM_EN &&
+	    pSPIHandle->SPIConfig.SPI_DeviceMode == SPI_Device_Mode_Master)
 	{
 		tempreg |= (1U << SPI_CR1_SSI);
-	}*/
+	}
 
 	pSPIHandle->pSPIx->CR1 = tempreg;
+
+
+
+
 }
 
 /*********************************************************************
@@ -203,6 +207,23 @@ void SPI_SendData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len)
 
 	}
 }
+
+
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx , uint8_t EnorDi)
+{
+	if(EnorDi == ENABLE)
+	{
+		//SPE: SPI enable
+		pSPIx->CR1 |= (1 << SPI_CR1_SPE);
+	}
+
+	else
+	{
+		//SPE: SPI desable
+		pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
+	}
+}
+
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len);
 
 
