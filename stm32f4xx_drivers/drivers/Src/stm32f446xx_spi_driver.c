@@ -156,9 +156,22 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 
 
 
-uint8_t SPI_GETFLAGSTATUS(SPI_RegDef_t *pSPIx , uint32_t  FlagName)
+/*********************************************************************
+ * @fn              - SPI_GETFLAGSTATUS
+ *
+ * @brief           - This function returns the state of a flag of the SPI status register (SR)
+ *
+ * @param[in]       - base address of the SPI peripheral
+ * @param[in]       - flag mask to test (SPI_TXE_FLAG, SPI_RXNE_FLAG, SPI_BUSY_FLAG...)
+ *
+ * @return          - FLAG_SET if the flag is set, FLAG_RESET otherwise
+ *
+ * @Note            - The flag is a mask with a single bit set: the bitwise AND
+ *                    with SR is non-zero only if that bit is 1.
+ *********************************************************************/
+uint8_t SPI_GETFLAGSTATUS(SPI_RegDef_t *pSPIx, uint32_t FlagName)
 {
-	return (pSPIx->SR & FlagName) ? FLAG_SET : FLAG_RESET ;
+	return (pSPIx->SR & FlagName) ? FLAG_SET : FLAG_RESET;
 }
 
 /*********************************************************************
@@ -209,22 +222,100 @@ void SPI_SendData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len)
 }
 
 
-void SPI_PeripheralControl(SPI_RegDef_t *pSPIx , uint8_t EnorDi)
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx , uint8_t *pRxBuffer , uint32_t Len)
 {
-	if(EnorDi == ENABLE)
-	{
-		//SPE: SPI enable
-		pSPIx->CR1 |= (1 << SPI_CR1_SPE);
-	}
 
+
+	while (Len > 0)
+	{
+		//1 wait until RXNE is set
+		while(SPI_GETFLAGSTATUS(pSPIx , SPI_RXNE_FLAG) == FLAG_RESET);
+
+		//2 check the DFF bit in CR1
+
+		if(pSPIx->CR1 & (1U << SPI_CR1_DFF))
+		{
+			// 16 bits DFF
+			// 1. load the date from DR to RxBuffer
+			 *((uint16_t*)pRxBuffer) = pSPIx->DR;
+
+			Len--;
+			Len--;
+			pRxBuffer+=2;
+		}
+
+		else
+		{
+			// 8 bits DFF
+			// 1. load the date from DR to RxBuffer
+			 *(pRxBuffer) = pSPIx->DR;
+
+			Len--;
+			pRxBuffer++;
+		}
+
+	}
+}
+
+/*********************************************************************
+ * @fn              - SPI_PeripheralControl
+ *
+ * @brief           - This function enables or disables the SPI peripheral (SPE bit of SPI_CR1)
+ *
+ * @param[in]       - base address of the SPI peripheral
+ * @param[in]       - ENABLE or DISABLE macros
+ *
+ * @return          - none
+ *
+ * @Note            - Configure the SPI (SPI_Init) before enabling it. When
+ *                    disabling, wait for the BSY flag to be cleared first,
+ *                    otherwise the last byte being sent can be cut.
+ *********************************************************************/
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnorDi)
+{
+	if (EnorDi == ENABLE)
+	{
+		/* SPE: SPI enable */
+		pSPIx->CR1 |= (1U << SPI_CR1_SPE);
+	}
 	else
 	{
-		//SPE: SPI desable
-		pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
+		/* SPE: SPI disable */
+		pSPIx->CR1 &= ~(1U << SPI_CR1_SPE);
+	}
+}
+
+/*********************************************************************
+ * @fn              - SPI_SSOEConfig
+ *
+ * @brief           - This function enables or disables the SS output (SSOE bit of SPI_CR2)
+ *
+ * @param[in]       - base address of the SPI peripheral
+ * @param[in]       - ENABLE or DISABLE macros
+ *
+ * @return          - none
+ *
+ * @Note            - SSOE only has an effect in master mode with hardware slave
+ *                    management (SSM = 0). When enabled, the NSS pin is driven low
+ *                    automatically as soon as the SPI is enabled (SPE = 1), and
+ *                    released when SPE = 0. When disabled, NSS can be used
+ *                    in a multi-master configuration.
+ *********************************************************************/
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi)
+{
+	if (EnorDi == ENABLE)
+	{
+		pSPIx->CR2 |= (1U << SPI_CR2_SSOE);
+	}
+	else
+	{
+		pSPIx->CR2 &= ~(1U << SPI_CR2_SSOE);
 	}
 }
 
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len);
+
+
 
 
 /*
