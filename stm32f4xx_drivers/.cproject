@@ -73,7 +73,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc"/>
-						<entry excluding="005_spi_tx_testing.c|004_interrupt_button.c|003_led_toggle_exteral_but_and_led.c|main.c|002_led_toggle_using_but1.c|001_led_toggle.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
+						<entry excluding="006_spi_stm32_arduino.c|005_spi_tx_testing.c|004_interrupt_button.c|003_led_toggle_exteral_but_and_led.c|main.c|002_led_toggle_using_but1.c|001_led_toggle.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Startup"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
 					</sourceEntries>
@@ -148,7 +148,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc"/>
-						<entry excluding="005_spi_tx_testing.c|004_interrupt_button.c|003_led_toggle_exteral_but_and_led.c|main.c|002_led_toggle_using_but1.c|001_led_toggle.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
+						<entry excluding="006_spi_stm32_arduino.c|005_spi_tx_testing.c|004_interrupt_button.c|003_led_toggle_exteral_but_and_led.c|main.c|002_led_toggle_using_but1.c|001_led_toggle.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Startup"/>
 					</sourceEntries>
 				</configuration>
