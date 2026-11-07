@@ -232,7 +232,7 @@ int main()
 			SPI_SendData(SPI2,&dummy_write , 1);
 
 			uint8_t analog_read ;
-			analog_read = SPI_ReceiveData(SPI2, &analog_read, 1);
+			SPI_ReceiveData(SPI2, &analog_read, 1);
 		}
 
 

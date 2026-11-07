@@ -9,10 +9,11 @@
 #define INC_STM32F446XX_H_
 
 #include <stdint.h>
-
+#include <stddef.h>
 
 
 #define __vo volatile
+#define __we __attribute__((weak))
 
 
 /**********************START:Processor Specific Details****************************/
@@ -379,7 +380,10 @@ typedef struct
 #define IRQ_NO_EXTI9_5          23
 #define IRQ_NO_EXTI15_10        40
 
-
+#define IQR_NO_SPI1_global_interrupt  35
+#define IQR_NO_SPI2_global_interrupt  36
+#define IQR_NO_SPI3_global_interrupt  51
+#define IQR_NO_SPI4_global_interrupt  84
 
 
 /*

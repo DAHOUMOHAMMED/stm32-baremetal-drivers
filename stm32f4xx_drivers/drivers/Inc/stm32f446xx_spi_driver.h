@@ -33,8 +33,30 @@ typedef struct
 {
     SPI_RegDef_t *pSPIx;      /* base address of the SPIx peripheral (SPI1, SPI2...) */
     SPI_Config_t  SPIConfig;  /* SPI configuration settings */
+    uint8_t  *pTxBuffer;
+    uint8_t  *pRxBuffer;
+    uint32_t TxLen;
+    uint32_t RxLen;
+    uint8_t  TxState;
+    uint8_t  RxState;
+
 } SPI_Handle_t;
 
+/*
+ * SPI application state
+ */
+#define SPI_READY                0
+#define SPI_BUSY_IN_RX           1
+#define SPI_BUSY_IN_TX           2
+
+
+/*
+ * Possible SPI application EVENTS
+ */
+#define SPI_EVENT_TX_CMPLT        0
+#define SPI_EVENT_RX_CMPLT        1
+#define SPI_EVENT_OVR_CMPLT       2
+#define SPI_EVENT_CRC_CMPLT       3
 
 
 /*
@@ -132,6 +154,8 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx);
 void SPI_SendData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len);
 void SPI_ReceiveData(SPI_RegDef_t *pSPIx , uint8_t *pTxBuffer , uint32_t Len);
 
+uint8_t SPI_SendDataIT(SPI_Handle_t *pSPIHandle , uint8_t *pTxBuffer , uint32_t Len);
+uint8_t SPI_ReceiveDataIT(SPI_Handle_t *pSPIHandle , uint8_t *pTxBuffer , uint32_t Len);
 
 /*
  * IRQ Configuration and Handling
@@ -146,8 +170,15 @@ void SPI_IRQHandling(SPI_Handle_t *pHandle);
 
 void SPI_PeripheralControl(SPI_RegDef_t *pSPIx , uint8_t EnorDi);
 void SPI_SSOEConfig(SPI_RegDef_t *pSPIx  ,  uint8_t EnorDi);
-
 uint8_t SPI_GETFLAGSTATUS(SPI_RegDef_t *pSPIx , uint32_t  FlagName);
+void SPI_ClearOVRFlag(SPI_RegDef_t *pSPIx);
+void SPI_CloseTransmission(SPI_Handle_t *pSPIHandle);
+void SPI_CloseReception(SPI_Handle_t *pSPIHandle);
+
+/*
+ * application call back
+ */
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, uint8_t appEv);
 
 
 #endif /* INC_STM32F446XX_SPI_DRIVER_H_ */
