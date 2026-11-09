@@ -45,6 +45,36 @@ typedef struct
 #define I2C_FM_DUTY_2       0
 #define I2C_FM_DUTY_16_9    1
 
+/*
+ * I2C_SR1 flags
+ */
+#define I2C_FLAG_SB          (1U << I2C_SR1_SB)
+#define I2C_FLAG_ADDR        (1U << I2C_SR1_ADDR)
+#define I2C_FLAG_BTF         (1U << I2C_SR1_BTF)
+#define I2C_FLAG_ADD10       (1U << I2C_SR1_ADD10)
+#define I2C_FLAG_STOPF       (1U << I2C_SR1_STOPF)
+#define I2C_FLAG_RXNE        (1U << I2C_SR1_RXNE)
+#define I2C_FLAG_TXE         (1U << I2C_SR1_TXE)
+#define I2C_FLAG_BERR        (1U << I2C_SR1_BERR)
+#define I2C_FLAG_ARLO        (1U << I2C_SR1_ARLO)
+#define I2C_FLAG_AF          (1U << I2C_SR1_AF)
+#define I2C_FLAG_OVR         (1U << I2C_SR1_OVR)
+#define I2C_FLAG_PECERR      (1U << I2C_SR1_PECERR)
+#define I2C_FLAG_TIMEOUT     (1U << I2C_SR1_TIMEOUT)
+#define I2C_FLAG_SMBALERT    (1U << I2C_SR1_SMBALERT)
+
+/*
+ * I2C_SR2 flags
+ */
+#define I2C_FLAG_MSL         (1U << I2C_SR2_MSL)
+#define I2C_FLAG_BUSY        (1U << I2C_SR2_BUSY)
+#define I2C_FLAG_TRA         (1U << I2C_SR2_TRA)
+#define I2C_FLAG_GENCALL     (1U << I2C_SR2_GENCALL)
+#define I2C_FLAG_SMBDEFAULT  (1U << I2C_SR2_SMBDEFAULT)
+#define I2C_FLAG_SMBHOST     (1U << I2C_SR2_SMBHOST)
+#define I2C_FLAG_DUALF       (1U << I2C_SR2_DUALF)
+#define I2C_FLAG_PEC         (0xFFU << I2C_SR2_PEC)
+
 
 /*******************************************************************************************
  *                     			APIs supported by this driver
@@ -66,6 +96,9 @@ void I2C_DeInit(I2C_RegDef_t *pI2Cx);
 /*
  * Data Send and Receive
  */
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle , uint8_t *pTxBuffer , uint32_t Len , uint8_t SlaveAdrr);
+
+
 
 
 /*
