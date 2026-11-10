@@ -9,11 +9,10 @@
 
 #include <string.h>
 #include "stm32f446xx.h"
-#include "stm32f446xx_spi_driver.h"
-#include "stm32f446xx_gpio_driver.h"
+//#include "stm32f446xx_spi_driver.h"
+//#include "stm32f446xx_gpio_driver.h"
 
-//#define LOW 0
-///#define BTN_PRESSED LOW
+
 
 //command codes
 #define COMMAND_LED_CTRL                         0X50
