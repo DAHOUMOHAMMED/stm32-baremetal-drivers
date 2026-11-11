@@ -23,7 +23,7 @@ I2C_Handle_t I2CHandle;
 
 /*
  * PB6 => I2C1_SCL
- * PB9 => I2C1_SDA
+ * PB7 => I2C1_SDA
  * ALT function mode : 4
  */
 
@@ -44,7 +44,7 @@ void I2C_GPIOInits()
 	GPIO_Init(&I2CPINS);
 
 	//SDA
-	I2CPINS.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_9;
+	I2CPINS.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_7;
 	GPIO_Init(&I2CPINS);
 }
 
@@ -90,16 +90,16 @@ int main()
 	// enable the peripheral clock
 	I2C_PeriClockControl(I2C1, ENABLE);
 
-	uint8_t pinvalue = 0;
+
 
 	while(1)
 	{
-		pinvalue = GPIO_ReadFromInputPin(GPIOC, 13);
+		while(GPIO_ReadFromInputPin(GPIOC, 13));
 
-		if(pinvalue == BTN_PRESSED)
-		{
-			I2C_MasterSendData(&I2CHandle , (uint8_t*)user_data , strlen((char*)user_data) ,  Slave_Addr);
-		}
+		delay();
+
+		I2C_MasterSendData(&I2CHandle , (uint8_t*)user_data , strlen((char*)user_data) ,  Slave_Addr);
+
 	}
 }
 
