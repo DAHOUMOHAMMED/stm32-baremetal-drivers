@@ -29,8 +29,26 @@ typedef struct
 {
 	I2C_RegDef_t *pI2Cx;      /* base address of the I2Cx peripheral (I2C1, I2C...) */
     I2C_Config_t  I2CConfig;  /* I2C configuration settings */
+    uint8_t      *pTxBuffer;
+    uint8_t      *pRxBuffer;
+    uint32_t      TxLen;
+    uint32_t      RxLen;
+    uint8_t       TxRxState;
+    uint8_t       DevAddr;
+    uint32_t      RxSize;
+    uint8_t       Sr;
 
 } I2C_Handle_t;
+
+
+/*
+ * I2C application states
+ */
+#define I2C_READY                    0
+#define I2C_BUST_IN_RX               1
+#define I2C_BUST_IN_TX               2
+
+
 
 /* @I2C_SCLSpeed */
 #define I2C_SCL_SPEED_SM    100000
