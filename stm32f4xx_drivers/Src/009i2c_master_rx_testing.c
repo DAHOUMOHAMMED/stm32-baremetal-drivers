@@ -8,7 +8,10 @@
 
 
 #include <string.h>
+#include <stdio.h>
 #include "stm32f446xx.h"
+
+extern void initialise_monitor_handles();
 
 
 #define Slave_Addr 0x68
@@ -73,6 +76,12 @@ void I2C_Inits()
 
 int main()
 {
+
+
+	initialise_monitor_handles();
+	printf("Application is running\n");
+
+
 	/*******************Button configuration*************************/
 	GPIO_Handle_t GpioBut1 = {0};
 
@@ -104,18 +113,22 @@ int main()
 		delay();
 
         //Master sends command code 0x51 to read the length(1 byte) of the data from the slave
-		I2C_MasterSendData(&I2CHandle , &active_command , 1 ,  Slave_Addr);
+		I2C_MasterSendData(&I2CHandle , &active_command , 1 ,  Slave_Addr , I2C_ENABLE_SR);
 
 
 		//Master receive length info from slave
-		I2C_MasterReceiveData(&I2CHandle , &Len , 1 , Slave_Addr);
+		I2C_MasterReceiveData(&I2CHandle , &Len , 1 , Slave_Addr , I2C_ENABLE_SR);
 
 		//Master sends command code 0x52 to read the complete data from the slave
 		active_command = 0X52;
-		I2C_MasterSendData(&I2CHandle , &active_command , 1 ,  Slave_Addr);
+		I2C_MasterSendData(&I2CHandle , &active_command , 1 ,  Slave_Addr , I2C_ENABLE_SR);
 
 		//Master receive complete data from the slave
-		I2C_MasterReceiveData(&I2CHandle , rcv_buffer , Len , Slave_Addr);
+		I2C_MasterReceiveData(&I2CHandle , rcv_buffer , Len , Slave_Addr , I2C_DISABLE_SR);
+
+		rcv_buffer[Len+1] = '\0';
+
+		printf("Data : %s",rcv_buffer);
 
 	}
 }

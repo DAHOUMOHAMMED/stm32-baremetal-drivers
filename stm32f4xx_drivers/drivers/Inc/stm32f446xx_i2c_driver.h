@@ -94,6 +94,15 @@ typedef struct
 #define I2C_FLAG_PEC         (0xFFU << I2C_SR2_PEC)
 
 
+/*
+ * Enable or Disable repeated start
+ */
+#define I2C_DISABLE_SR         RESET
+#define I2C_ENABLE_SR            SET
+
+
+
+
 /*******************************************************************************************
  *                     			APIs supported by this driver
  *******************************************************************************************/
@@ -114,8 +123,8 @@ void I2C_DeInit(I2C_RegDef_t *pI2Cx);
 /*
  * Data Send and Receive
  */
-void I2C_MasterSendData(I2C_Handle_t *pI2CHandle , uint8_t *pTxBuffer , uint32_t Len , uint8_t SlaveAdrr);
-void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle , uint8_t *pRxBuffer , uint32_t Len , uint8_t SlaveAdrr);
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle , uint8_t *pTxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
+void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle , uint8_t *pRxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
 
 
 
