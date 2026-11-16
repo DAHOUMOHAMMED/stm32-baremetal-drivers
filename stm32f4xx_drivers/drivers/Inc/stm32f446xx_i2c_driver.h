@@ -45,8 +45,8 @@ typedef struct
  * I2C application states
  */
 #define I2C_READY                    0
-#define I2C_BUST_IN_RX               1
-#define I2C_BUST_IN_TX               2
+#define I2C_BUSY_IN_RX               1
+#define I2C_BUSY_IN_TX               2
 
 
 
@@ -100,7 +100,12 @@ typedef struct
 #define I2C_DISABLE_SR         RESET
 #define I2C_ENABLE_SR            SET
 
-
+/*
+ * I2C application event macros
+ */
+#define I2C_EV_TX_CMPLT    0
+#define I2C_EV_RX_CMPLT	   1
+#define I2C_EV_STOP        2
 
 
 /*******************************************************************************************
@@ -126,14 +131,18 @@ void I2C_DeInit(I2C_RegDef_t *pI2Cx);
 void I2C_MasterSendData(I2C_Handle_t *pI2CHandle , uint8_t *pTxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
 void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle , uint8_t *pRxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
 
+uint8_t I2C_MasterSendDataIT(I2C_Handle_t *pI2CHandle , uint8_t *pTxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
+uint8_t I2C_MasterReceiveDataIT(I2C_Handle_t *pI2CHandle , uint8_t *pRxBuffer , uint32_t Len , uint8_t SlaveAdrr, uint8_t Sr);
 
-
+void I2C_CloseSendData(I2C_Handle_t *pI2CHandle);
+void I2C_CloseReceiveData(I2C_Handle_t *pI2CHandle);
 /*
  * IRQ Configuration and Handling
  */
 void I2C_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi );
 void I2C_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);
-
+void I2C_EV_IRQHandling(I2C_Handle_t *pI2CHandle);
+void I2C_ER_IRQHandling(I2C_Handle_t *pI2CHandle);
 
 
 /*

@@ -413,6 +413,13 @@ typedef struct
 #define IQR_NO_SPI3_global_interrupt  51
 #define IQR_NO_SPI4_global_interrupt  84
 
+#define IQR_NO_I2C1_EV                31
+#define IQR_NO_I2C1_ER                32
+#define IQR_NO_I2C2_EV                33
+#define IQR_NO_I2C2_ER                34
+#define IQR_NO_I2C3_EV                72
+#define IQR_NO_I2C3_ER                73
+
 
 /*
  * NVIC Interrupt Priority Levels
