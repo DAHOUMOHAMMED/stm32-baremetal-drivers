@@ -4,7 +4,6 @@ Bare-metal peripheral drivers in C for the **STM32F446RE** (ARM Cortex-M4), writ
 
 I follow the Udemy course *Mastering Microcontroller and Embedded Driver Development (MCU1)* by FastBit Embedded Brain Academy. The course targets the STM32F407 Discovery board. I work on a **NUCLEO-F446RE**, so I adapt addresses, register structures, pins and clock bits by reading the F446 documents myself.
 
-> Work in progress. The status table below says what has been tested on hardware and what has not.
 
 ## Hardware
 
@@ -60,13 +59,12 @@ I follow the Udemy course *Mastering Microcontroller and Embedded Driver Develop
 | Item | Status |
 |---|---|
 | GPIO output (LED toggle) | Tested on hardware |
-| GPIO input (button) | Written, test in progress |
-| GPIO interrupts (EXTI + NVIC) | Written, not yet tested |
-| SPI master TX | Written, not yet checked on the logic analyzer |
-| I2C master TX | In progress, not yet tested |
-| SPI RX, I2C RX, USART | Not started |
+| GPIO input (button) | Tested on hardware |
+| GPIO interrupts (EXTI + NVIC) | Tested on hardware |
+| SPI master TX | Tested on hardware |
+| I2C master TX | Tested on hardware |
+| SPI RX, I2C RX, USART | Tested on hardware |
 
-I will update this table as each item is verified.
 
 ## Exercises
 
@@ -75,7 +73,7 @@ I will update this table as each item is verified.
 | `001_led_toggle.c` | Toggles the on-board LED (PA5) |
 | `003_*` | External LED (PA8) controlled by an external button (PB12) |
 | `005_spi_tx_testing.c` | Sends a length byte, then "Hello World", on SPI2 when the user button (PC13) is pressed |
-| `008i2c_master_tx_testing.c` | I2C1 master send, in progress |
+| `008i2c_master_tx_testing.c` | I2C1 master send |
 
 Each exercise has its own `main()`. Only one can be built at a time: exclude the others from the build in CubeIDE.
 
