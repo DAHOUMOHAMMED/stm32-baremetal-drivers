@@ -80,7 +80,19 @@ void USART_PeriClockControl(USART_RegDef_t *pUSARTx, uint8_t EnorDi)
 }
 
 
-
+void USART_PeripheralControl(USART_RegDef_t *pUSARTx, uint8_t EnorDi)
+{
+	if (EnorDi == ENABLE)
+	{
+		/* CR1: UE enable */
+		pUSARTx->USART_CR1 |= (1U << USART_CR1_UE);
+	}
+	else
+	{
+		/* CR1: UE disable */
+		pUSARTx->USART_CR1 &= ~(1U << USART_CR1_UE);
+	}
+}
 
 
 

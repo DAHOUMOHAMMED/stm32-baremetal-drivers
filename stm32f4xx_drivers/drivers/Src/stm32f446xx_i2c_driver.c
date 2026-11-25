@@ -202,10 +202,7 @@ void I2C_PeriClockControl(I2C_RegDef_t *pI2Cx , uint8_t EnorDi)
 }
 
 
-uint32_t RCC_GetPLLOutputClock()
-{
-	return 0;
-}
+
 
 
 

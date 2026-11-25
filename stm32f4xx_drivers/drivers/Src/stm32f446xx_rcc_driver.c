@@ -13,6 +13,10 @@ uint16_t AHB_PreScaler[9] = { 2,4,8,16,32,64,128,256,512};
 uint16_t APB1_PreScaler[4] = { 2,4,8,16};
 uint8_t  APB2_PreScaler[4] = {2, 4, 8, 16};
 
+uint32_t RCC_GetPLLOutputClock()
+{
+	return 0;
+}
 
 /*********************************************************************
  * @fn              - RCC_GetPCLK1Value
