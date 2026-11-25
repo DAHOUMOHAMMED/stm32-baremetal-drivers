@@ -11,7 +11,7 @@
 
 USART_Handle_t USART1Handle = {0};
 
-char msg[1012] = "Inchalah\n\r";
+char msg[1012] = "Hello, My name is Mohammed Dahou , i'm an embedded engineer :)\n\r";
 
 void delay(void)
 {
